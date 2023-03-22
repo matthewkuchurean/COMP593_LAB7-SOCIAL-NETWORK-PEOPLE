@@ -7,7 +7,9 @@ Usage:
  python old_people.py
 """
 import os
-import inspect 
+import inspect
+import sqlite3
+import pandas as pd
 
 def main():
     global db_path
@@ -26,35 +28,41 @@ def main():
 
 def get_old_people():
     """Queries the Social Network database for all people who are at least 50 years old.
-
     Returns:
         list: (name, age) of old people 
     """
-    # TODO: Create function body
-    return []
+    con = sqlite3.connect(db_path)
+    cur = con.cursor()
+    get_old_people_query = """
+        SELECT name, age FROM people
+        WHERE age >= 50
+    """
+    cur.execute(get_old_people_query)
+    query_result = cur.fetchall()
+    con.close()
+    return query_result
 
 def print_name_and_age(name_and_age_list):
     """Prints name and age of all people in provided list
-
     Args:
         name_and_age_list (list): (name, age) of people
     """
-    # TODO: Create function body
+    for n, a in name_and_age_list:
+        print(f'{n} is {a} years old.')
     return
 
 def save_name_and_age_to_csv(name_and_age_list, csv_path):
     """Saves name and age of all people in provided list
-
     Args:
         name_and_age_list (list): (name, age) of people
         csv_path (str): Path of CSV file
     """
-    # TODO: Create function body
+    df = pd.DataFrame(name_and_age_list, columns=['Name', 'Age'])
+    df.to_csv(csv_path, index=False)
     return
 
 def get_script_dir():
     """Determines the path of the directory in which this script resides
-
     Returns:
         str: Full path of the directory in which this script resides
     """
